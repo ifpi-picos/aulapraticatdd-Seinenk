@@ -1,10 +1,14 @@
-class Dollar {
+class Dollar extends Money {
+    private String currency;
     private int amount;
-    Dollar(int amount) {
-        this.amount= amount;
+    Dollar(int amount, String currency)  {
+        super(amount, currency);
+    }
+    String currency() {
+        return currency;
     }
     Money times(int multiplier)  {
-        return new Dollar(amount * multiplier);
+        return Money.dollar(amount * multiplier);
     }
 }		
 
@@ -14,13 +18,17 @@ public void testFrancMultiplication() {
     assertEquals(Money.franc(15), five.times(3));
 }
 
-class Franc {   
+class Franc extends Money { 
+    private String currency;  
     private int amount;					
-    Franc(int amount) {      
-        this.amount= amount;
+    Franc(int amount, String currency) {
+        super(amount, currency);
+    }
+    String currency() {
+        return currency;
     }					
     Money times(int multiplier)  {
-        return new Franc(amount * multiplier);
+        return Money.franc(amount * multiplier);
     }  
     public boolean equals(Object object) {					
         Franc franc = (Franc) object;      
@@ -47,15 +55,26 @@ public boolean equals(Object object)  {
     return amount == dollar.amount;
 }
 
-class Money  {
+abstract class Money  {
     protected int amount;
 
+    protected String currency;
+
     static Money dollar(int amount)  {
-        return new Dollar(amount);
+        return new Dollar(amount, "USD");
+    }
+
+    String currency() {
+        return currency;
     }
     
     static Money franc(int amount) {
-        return new Franc(amount);
+        return new Franc(amount, "CHF");
+    }
+
+    Money(int amount, String currency) {
+        this.amount = amount;
+        this.currency = currency;
     }
     
     abstract Money times(int multiplier);
@@ -64,4 +83,9 @@ class Money  {
         Money money = (Money) object;
         return amount == money.amount && getClass().equals(money.getClass());
     }   
+}
+
+public void testCurrency() {
+    assertEquals("USD", Money.dollar(1).currency());
+    assertEquals("CHF", Money.franc(1).currency());
 }
